@@ -2,19 +2,23 @@ name: Update YouTube Playlist
 on:
   schedule: [ { cron: "20 */6 * * *" } ]  # every 6 hours
   workflow_dispatch: {}
+permissions:
+  contents: read
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
+        with:
+          python-version: '3.11'
       - run: pip install google-api-python-client google-auth google-auth-oauthlib
       - env:
           CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
           TARGET_PLAYLIST_ID: ${{ secrets.TARGET_PLAYLIST_ID }}
-          SEED_PLAYLISTS: ${{ secrets.SEED_PLAYLISTS }}   # comma-separated playlist IDs (e.g. enthef's)
+          SEED_PLAYLISTS: ${{ secrets.SEED_PLAYLISTS }}
+          BANLIST_PLAYLIST_ID: ${{ secrets.BANLIST_PLAYLIST_ID }}
           MAX_ITEMS: "150"
         run: python update_playlist.py
